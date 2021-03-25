@@ -3,7 +3,7 @@ import { FetchDataResult } from "./fetch-data-results";
 
 export const useFetchData = <T>(
   callback: () => Promise<T>,
-  deps?: unknown[]
+  deps: unknown[] = []
 ): FetchDataResult<T> => {
   const [state, setState] = useState<FetchDataResult<T>>({
     data: null,
@@ -12,17 +12,16 @@ export const useFetchData = <T>(
   });
 
   useEffect(() => {
-    if (state.status !== "loading") {
-      setState({
-        data: null,
-        error: null,
-        status: "loading"
-      });
-    }
+    setState({
+      data: null,
+      error: null,
+      status: "loading"
+    });
+
     callback()
       .then(data => setState({ data, error: null, status: "success" }))
       .catch(error => setState({ data: null, error, status: "error" }));
-  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return state;
 };
